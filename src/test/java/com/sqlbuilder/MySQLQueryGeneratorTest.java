@@ -2,12 +2,13 @@ package com.sqlbuilder;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 
 import com.sqlbuilder.exception.FromMissingException;
+import com.sqlbuilder.mysql.MySQLGenerator;
+import com.sqlbuilder.mysql.MySQLQuery;
+
+import enums.OperatorEnum;
 
 public class MySQLQueryGeneratorTest {
     @Test
@@ -26,21 +27,18 @@ public class MySQLQueryGeneratorTest {
     }
 
     @Test
-    public void should_return_a_query_with_custom_select() throws FromMissingException {
+    public void should_return_a_query_with_fields_in_select() throws FromMissingException {
         StringBuilder expectedQueryBuilder = new StringBuilder();
         expectedQueryBuilder.append("SELECT first_name, last_name FROM table1;");
         String expectedQuery = expectedQueryBuilder.toString();
         QueryBuilder queryBuilder = MySQLQuery.getMySQLQueryBuilder();
-        List<String> listField = new ArrayList<String>();
-        listField.add("first_name");
-        listField.add("last_name");
         MySQLQuery mySQLQuery = queryBuilder
-                .withSelect("first_name", "last_name")
+                .withSelect("first_name, last_name")
                 .withFrom("table1")
                 .build();
 
-        SqlGenerator sqlGenerator = new MySQLGenerator(mySQLQuery);
-        String sql = sqlGenerator.getSQL();
+        QueryStrategist queryStrategist = new QueryStrategist(new MySQLGenerator(mySQLQuery));
+        String sql = queryStrategist.toSql();
 
         assertTrue(expectedQuery.equals(sql));
     }
@@ -48,32 +46,45 @@ public class MySQLQueryGeneratorTest {
     @Test
     public void should_return_a_query_with_custom_select_and_where_clause() throws FromMissingException {
         StringBuilder expectedQueryBuilder = new StringBuilder();
-        expectedQueryBuilder.append("SELECT first_name, last_name FROM table1 WHERE table1.first_name > 0;");
+        expectedQueryBuilder.append("SELECT amount, bill_code FROM bill WHERE bill.amount > 0;");
         String expectedQuery = expectedQueryBuilder.toString();
         QueryBuilder queryBuilder = MySQLQuery.getMySQLQueryBuilder();
-        List<String> listField = new ArrayList<String>();
-        listField.add("first_name");
-        listField.add("last_name");
         MySQLQuery mySQLQuery = queryBuilder
-                .withSelect(listField)
-                .withFrom("table1")
-                .withWhere("table1.first_name > 0")
+                .withSelect("amount, bill_code")
+                .withFrom("bill")
+                .withWhere("bill.amount", OperatorEnum.GREATER_THAN.value(), "0")
                 .build();
 
-        SqlGenerator sqlGenerator = new MySQLGenerator(mySQLQuery);
-        String sql = sqlGenerator.getSQL();
+        QueryStrategist queryStrategist = new QueryStrategist(new MySQLGenerator(mySQLQuery));
+        String sql = queryStrategist.toSql();
+
+        System.out.println(sql.toString());
 
         assertTrue(expectedQuery.equals(sql));
 
     }
 
-    public void should_return_query_with_condition_and_where(){
+    @Test
+    public void should_return_query_with_condition_and_where() throws FromMissingException {
         StringBuilder expecStringBuilder = new StringBuilder();
-        expecStringBuilder.append("SELECT first_name, last_name FROM table1 WHERE table1.first_name > 0 AND table1.age > 18;");
+        expecStringBuilder.append(
+                "SELECT first_name, last_name FROM table1 WHERE table1.first_name IS NOT NULL AND table1.age > 18;");
         String expectedQuery = expecStringBuilder.toString();
         QueryBuilder queryBuilder = MySQLQuery.getMySQLQueryBuilder();
-        List<String> listField = new ArrayList<String>();
+        MySQLQuery mysqlQuery = queryBuilder
+                .withSelect("first_name, last_name")
+                .withFrom("table1")
+                .withWhere("table1.first_name", OperatorEnum.IS_NOT.value(), "NULL")
+                .andWhere("table1.age", OperatorEnum.GREATER_THAN.value(), "18")
+                .build();
+        QueryStrategist queryStrategist = new QueryStrategist(new MySQLGenerator(mysqlQuery));
+        String sql = queryStrategist.toSql();
 
-        
+        assertTrue(expectedQuery.equals(sql));
+    }
+
+    @Test
+    public void should_return_query_with_successive_and_where(){
+        // TODO test the case if we want to have a query with successive and where
     }
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.sqlbuilder.exception.FromMissingException;
+import com.sqlbuilder.mysql.MySQLQuery;
 
 /**
  * Unit test for MySQLQuery
@@ -30,7 +31,7 @@ public class MySQLQueryTest
     public void should_throw_exception_for_mysql_query_object_without_from() throws FromMissingException{
         QueryBuilder queryBuilder = MySQLQuery.getMySQLQueryBuilder();
         
-        MySQLQuery mySQLQuery = queryBuilder.build();
+        queryBuilder.build();
     }
 
     @Test
@@ -39,15 +40,13 @@ public class MySQLQueryTest
         List<String> listField = new ArrayList<String>();
         listField.add("firstname");
         listField.add("lastname");
-        queryBuilder.withSelect(listField)
+        queryBuilder.withSelect("first_name, last_name")
         .withFrom("table1");
 
         MySQLQuery mySQLQuery = queryBuilder.build();
         
-        assertTrue(mySQLQuery.getCustomSelect().size() > 0);
+        assertTrue(mySQLQuery.getFields().length() > 0);
 
-        assertTrue(mySQLQuery.getCustomSelect().contains("firstname"));
-
-        assertTrue(mySQLQuery.getCustomSelect().contains("lastname"));
+        assertTrue(mySQLQuery.getFields().contains("first_name"));
     }
 }

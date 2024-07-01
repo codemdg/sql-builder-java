@@ -1,16 +1,17 @@
 package com.sqlbuilder;
 
-import java.util.List;
-
 import com.sqlbuilder.exception.FromMissingException;
+import com.sqlbuilder.mysql.MySQLQuery;
 
 public interface QueryBuilder {
 
-    QueryBuilder withSelect(List<String> select);
+    QueryBuilder withSelect(String fields);
 
     QueryBuilder withFrom(String from);
 
     MySQLQuery build() throws FromMissingException;
 
-    QueryBuilder withWhere(String string);
+    QueryBuilder withWhere(String firstField, String operator, String fieldSecond);
+
+    QueryBuilder andWhere(String firstField, String operator, String fieldSecond);
 }
