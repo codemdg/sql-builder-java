@@ -1,5 +1,6 @@
 package com.sqlbuilder;
 
+import java.util.List;
 
 public interface SqlQuery {
 
@@ -9,5 +10,5 @@ public interface SqlQuery {
 
     String getWithWhere();
 
-    String getAndWhere();
+    List<String> getAndWhere();
 }

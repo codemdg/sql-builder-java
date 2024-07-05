@@ -28,8 +28,8 @@ public class MySQLGenerator implements SqlGenerator{
             this.mysqlStringBuilder.append(mySqlQuery.getWithWhere());
         }
 
-        if(mySqlQuery.getAndWhere() != null) {
-            this.mysqlStringBuilder.append(mySqlQuery.getAndWhere());
+        if(mySqlQuery.getAndWhere().size() > 0) {
+            this.mysqlStringBuilder.append(String.join("", mySqlQuery.getAndWhere()));
         }
 
         this.mysqlStringBuilder.append(";");

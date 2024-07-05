@@ -1,5 +1,8 @@
 package com.sqlbuilder.mysql;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sqlbuilder.QueryBuilder;
 import com.sqlbuilder.SqlQuery;
 import com.sqlbuilder.exception.FromMissingException;
@@ -12,7 +15,7 @@ public class MySQLQuery implements SqlQuery {
 
     private String withWhere;
 
-    private String andWhere;
+    private List<String> andWhere = new ArrayList<String>();
 
     public static QueryBuilder getMySQLQueryBuilder() {
         return new MySQLQueryBuilder();
@@ -26,22 +29,19 @@ public class MySQLQuery implements SqlQuery {
 
         private String withWhere;
 
-        private String andWhere;
+        private List<String> andWhere = new ArrayList<String>();
 
-        @Override
         public QueryBuilder withSelect(String fields) {
             this.fields = fields;
             return this;
         }
 
-        @Override
         public QueryBuilder withFrom(String from) {
             this.from = from;
 
             return this;
         }
 
-        @Override
         public MySQLQuery build() throws FromMissingException {
             MySQLQuery mySQLQuery = new MySQLQuery();
             mySQLQuery.fields = this.fields;
@@ -54,20 +54,18 @@ public class MySQLQuery implements SqlQuery {
             return mySQLQuery;
         }
 
-        @Override
         public QueryBuilder withWhere(String firstField, String operator, String fieldSecond) {
             this.withWhere = this.where(firstField, operator, fieldSecond);
 
             return this;
         }
 
-        @Override
         public QueryBuilder andWhere(String firstField, String operator, String fieldSecond) {
             StringBuilder stringBuilder = new StringBuilder();
-            this.andWhere = stringBuilder
-                    .append(" AND ")
-                    .append(this.where(firstField, operator, fieldSecond))
-                    .toString();
+            this.andWhere.add(stringBuilder
+            .append(" AND ")
+            .append(this.where(firstField, operator, fieldSecond))
+            .toString());
 
             return this;
         }
@@ -95,7 +93,7 @@ public class MySQLQuery implements SqlQuery {
         return this.withWhere;
     }
 
-    public String getAndWhere() {
+    public List<String> getAndWhere() {
         return this.andWhere;
     }
 }

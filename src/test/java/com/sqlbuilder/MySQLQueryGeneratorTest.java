@@ -80,11 +80,30 @@ public class MySQLQueryGeneratorTest {
         QueryStrategist queryStrategist = new QueryStrategist(new MySQLGenerator(mysqlQuery));
         String sql = queryStrategist.toSql();
 
+        System.out.println(sql);
+
         assertTrue(expectedQuery.equals(sql));
     }
 
     @Test
-    public void should_return_query_with_successive_and_where(){
-        // TODO test the case if we want to have a query with successive and where
+    public void should_return_query_with_successive_and_where() throws FromMissingException{
+        StringBuilder exStringBuilder = new StringBuilder();
+        exStringBuilder.append("SELECT first_name, last_name FROM table1 WHERE table1.first_name IS NOT NULL AND table1.age > 18 AND table1.gender = H;");
+        String expectedQuery = exStringBuilder.toString();
+        QueryBuilder queryBuilder = MySQLQuery.getMySQLQueryBuilder();
+        MySQLQuery mysqlQuery = queryBuilder
+        .withSelect("first_name, last_name")
+        .withFrom("table1")
+        .withWhere("table1.first_name", OperatorEnum.IS_NOT.value(),"NULL")
+        .andWhere("table1.age", OperatorEnum.GREATER_THAN.value(), "18")
+        .andWhere("table1.gender", OperatorEnum.EQUAL.value(), "H")
+        .build();
+
+        QueryStrategist queryStrategist = new QueryStrategist(new MySQLGenerator(mysqlQuery));
+        String sql = queryStrategist.toSql();
+
+        System.out.println(sql);
+
+        assertTrue(expectedQuery.equals(sql));
     }
 }
