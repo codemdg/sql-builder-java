@@ -102,8 +102,6 @@ public class MySQLQueryGeneratorTest {
         QueryStrategist queryStrategist = new QueryStrategist(new MySQLGenerator(mysqlQuery));
         String sql = queryStrategist.toSql();
 
-        System.out.println(sql);
-
         assertTrue(expectedQuery.equals(sql));
     }
 }
